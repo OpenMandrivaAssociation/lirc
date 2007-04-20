@@ -135,9 +135,6 @@ make \
 DEFS="-DHAVE_CONFIG_H -DHID_MAX_USAGES"
 %endif
 
-cd doc
-./release-html.sh
-
 %install
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT%{_datadir}/aclocal
