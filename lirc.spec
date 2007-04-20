@@ -2,8 +2,8 @@
 %define	name	lirc
 
 %define	version	0.8.1
-%define snapshot 20061104
-%define	rel	3
+%define snapshot 0
+%define	rel	1
 
 %if %snapshot
 %define release	%mkrel 0.%snapshot.%rel
@@ -23,13 +23,11 @@ Group:		System/Kernel and hardware
 %if %snapshot
 Source0:	%{name}-%{snapshot}.tar.bz2
 %else
-Source0:	http://download.sourceforge.net/LIRC/%{name}-%{version}.tar.bz2
+Source0:	http://prdownloads.sourceforge.net/lirc/%{name}-%{version}.tar.bz2
 %endif
 Source2:	lircd.sysconfig
 Source3:	lircd.init
 Source4:	lircmd.init
-Patch1:		lirc-autogen-libtoolize-check-fix.patch
-Patch2:		lirc-fix-devinput-repeat.patch
 URL:		http://www.lirc.org/
 BuildRequires:	autoconf2.5
 BuildRequires:	automake1.9
@@ -119,11 +117,8 @@ rm -r CVS */CVS */*/CVS
 %else
 %setup -q
 %endif
-%patch1 -p1 -b .libtoolize
-%patch2 -p1
 
 %build
-./autogen.sh
 
 %configure2_5x	--localstatedir=/var \
 		--with-x \
