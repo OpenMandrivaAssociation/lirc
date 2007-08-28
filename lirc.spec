@@ -2,11 +2,11 @@
 %define	name	lirc
 
 %define	version	0.8.2
-%define snapshot 0
+%define snapshot 20070827
 %define	rel	1
 
 %if %snapshot
-%define release	%mkrel 0.%snapshot.%rel
+%define release	%mkrel 1.%snapshot.%rel
 %else
 %define	release	%mkrel %rel
 %endif
@@ -21,6 +21,8 @@ Release:	%{release}
 License:	GPL
 Group:		System/Kernel and hardware
 %if %snapshot
+# cvs -d:pserver:anonymous@lirc.cvs.sourceforge.net:/cvsroot/lirc login
+# cvs -z8 -d:pserver:anonymous@lirc.cvs.sourceforge.net:/cvsroot/lirc co lirc
 Source0:	%{name}-%{snapshot}.tar.bz2
 %else
 Source0:	http://prdownloads.sourceforge.net/lirc/%{name}-%{version}.tar.bz2
@@ -120,6 +122,8 @@ rm -r CVS */CVS */*/CVS
 
 %build
 
+./autogen.sh
+
 %configure2_5x	--localstatedir=/var \
 		--with-x \
 		--with-port=0x3f8 \
@@ -127,13 +131,16 @@ rm -r CVS */CVS */*/CVS
 		--disable-manage-devices \
 		--with-syslog=LOG_DAEMON \
 		--with-driver=userspace \
-		--with-transmitter
+		--with-transmitter \
+		--with-kerneldir=$(pwd) # fixes build as of 20070827
 
 # parallel build doesn't work as of cvs20060722
 make \
 %if %mdkversion < 1020
 DEFS="-DHAVE_CONFIG_H -DHID_MAX_USAGES"
 %endif
+
+%make -C doc release
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -167,7 +174,7 @@ for lircsrcdir in %{name} %{name}-parallel %{name}-gpio; do
 
 install -d -m755 %{buildroot}/usr/src/$lircsrcdir-%{version}-%{release}
 cp -a Makefile Makefile.in Makefile.am acinclude.m4 \
-	configure.in config.status config.h \
+	configure.ac config.status config.h \
 	%{buildroot}/usr/src/$lircsrcdir-%{version}-%{release}
 
 # Makefiles call there to unnecessarily regenerate files
@@ -195,9 +202,9 @@ popd
 cat > %{buildroot}/usr/src/%{name}-%{version}-%{release}/dkms.conf <<EOF
 PACKAGE_NAME="%{name}"
 PACKAGE_VERSION="%{version}-%{release}"
-MAKE[0]="for driver in $drivers; do make -C drivers/\\\$driver \
+MAKE[0]="droot=\\\$(pwd); for driver in $drivers; do cd \\\$droot/drivers/\\\$driver; make \
 	KERNEL_LOCATION=\$kernel_source_dir AUTOMAKE=true AUTOCONF=true ACLOCAL=true; done"
-CLEAN="for driver in $drivers; do make -C drivers/\\\$driver \
+CLEAN="droot=\\\$(pwd); for driver in $drivers; do cd \\\$droot/drivers/\\\$driver; make \
 	clean AUTOMAKE=true AUTOCONF=true ACLOCAL=true; done"
 AUTOINSTALL=yes
 EOF
@@ -216,9 +223,9 @@ for drivername in parallel gpio; do
 cat > %{buildroot}/usr/src/%{name}-$drivername-%{version}-%{release}/dkms.conf <<EOF
 PACKAGE_NAME="%{name}-$drivername"
 PACKAGE_VERSION="%{version}-%{release}"
-MAKE[0]="make -C drivers/lirc_$drivername \
+MAKE[0]="cd drivers/lirc_$drivername; make \
 	KERNEL_LOCATION=\$kernel_source_dir AUTOMAKE=true AUTOCONF=true ACLOCAL=true"
-CLEAN="make -C drivers/lirc_$drivername \
+CLEAN="cd drivers/lirc_$drivername; make \
 	clean AUTOMAKE=true AUTOCONF=true ACLOCAL=true"
 AUTOINSTALL=yes
 BUILT_MODULE_NAME[0]="lirc_$drivername"
@@ -244,9 +251,9 @@ rm -rf $RPM_BUILD_ROOT
 %_preun_service lircd
 
 %post -n dkms-%{name}
-dkms add     -m %{name} -v %{version}-%{release} --rpm_safe_upgrade
-dkms build   -m %{name} -v %{version}-%{release} --rpm_safe_upgrade
-dkms install -m %{name} -v %{version}-%{release} --rpm_safe_upgrade
+dkms add     -m %{name} -v %{version}-%{release} --rpm_safe_upgrade &&
+dkms build   -m %{name} -v %{version}-%{release} --rpm_safe_upgrade &&
+dkms install -m %{name} -v %{version}-%{release} --rpm_safe_upgrade --force
 true
 
 %preun -n dkms-%{name}
@@ -254,9 +261,9 @@ dkms remove  -m %{name} -v %{version}-%{release} --rpm_safe_upgrade --all
 true
 
 %post -n dkms-%{name}-parallel
-dkms add     -m %{name}-parallel -v %{version}-%{release} --rpm_safe_upgrade
-dkms build   -m %{name}-parallel -v %{version}-%{release} --rpm_safe_upgrade
-dkms install -m %{name}-parallel -v %{version}-%{release} --rpm_safe_upgrade
+dkms add     -m %{name}-parallel -v %{version}-%{release} --rpm_safe_upgrade &&
+dkms build   -m %{name}-parallel -v %{version}-%{release} --rpm_safe_upgrade &&
+dkms install -m %{name}-parallel -v %{version}-%{release} --rpm_safe_upgrade --force
 true
 
 %preun -n dkms-%{name}-parallel
@@ -264,9 +271,9 @@ dkms remove  -m %{name}-parallel -v %{version}-%{release} --rpm_safe_upgrade --a
 true
 
 %post -n dkms-%{name}-gpio
-dkms add     -m %{name}-gpio -v %{version}-%{release} --rpm_safe_upgrade
-dkms build   -m %{name}-gpio -v %{version}-%{release} --rpm_safe_upgrade
-dkms install -m %{name}-gpio -v %{version}-%{release} --rpm_safe_upgrade
+dkms add     -m %{name}-gpio -v %{version}-%{release} --rpm_safe_upgrade &&
+dkms build   -m %{name}-gpio -v %{version}-%{release} --rpm_safe_upgrade &&
+dkms install -m %{name}-gpio -v %{version}-%{release} --rpm_safe_upgrade --force
 true
 
 %preun -n dkms-%{name}-gpio
@@ -288,7 +295,7 @@ true
 
 %files -n %{lib_name}
 %defattr(-,root,root)
-%{_libdir}/*.so.*
+%{_libdir}/*.so.%{lib_major}*
 
 %files -n %{lib_name}-devel
 %defattr(-,root,root)
@@ -309,6 +316,3 @@ true
 %files -n dkms-%{name}-gpio
 %defattr(-,root,root)
 /usr/src/%{name}-gpio-%{version}-%{release}
-
-
-
