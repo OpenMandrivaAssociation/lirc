@@ -2,8 +2,8 @@
 %define	name	lirc
 
 %define	version	0.8.2
-%define snapshot 20070827
-%define	rel	3
+%define snapshot 20071011
+%define	rel	1
 
 %if %snapshot
 %define release	%mkrel 1.%snapshot.%rel
@@ -11,19 +11,20 @@
 %define	release	%mkrel %rel
 %endif
 
-%define	lib_major 0
-%define lib_name %mklibname %{name} %{lib_major}
+%define	major 0
+%define libname %mklibname %{name} %{major}
+%define develname %mklibname %{name} -d
 
 Summary:	Linux Infrared Remote Control daemons
 Name:		%{name}
 Version:	%{version}
 Release:	%{release}
-License:	GPL
+License:	GPLv2+
 Group:		System/Kernel and hardware
 %if %snapshot
 # cvs -d:pserver:anonymous@lirc.cvs.sourceforge.net:/cvsroot/lirc login
 # cvs -z8 -d:pserver:anonymous@lirc.cvs.sourceforge.net:/cvsroot/lirc co lirc
-Source0:	%{name}-%{snapshot}.tar.bz2
+Source0:	%{name}-%{snapshot}.tar.lzma
 %else
 Source0:	http://prdownloads.sourceforge.net/lirc/%{name}-%{version}.tar.bz2
 %endif
@@ -31,8 +32,7 @@ Source2:	lircd.sysconfig
 Source3:	lircd.init
 Source4:	lircmd.init
 URL:		http://www.lirc.org/
-BuildRequires:	autoconf2.5
-BuildRequires:	automake1.9
+BuildRequires:	autoconf
 BuildRequires:	XFree86-devel
 BuildRequires:  libirman-static-devel
 BuildRequires:	libusb-devel
@@ -54,22 +54,23 @@ of many (but not all) commonly used remote controls.
 
 Configuration files for many remotes are locate in lirc-remotes package
 
-%package -n	%{lib_name}
+%package -n	%{libname}
 Summary:	LIRC libraries
 Group:		System/Libraries
 
-%description -n	%{lib_name}
+%description -n	%{libname}
 This package provides the libraries necessary to run lirc client
 programs.
 
-%package -n	%{lib_name}-devel
+%package -n	%{develname}
 Summary:	Header and library files for LIRC development
 Group:		Development/Other
-Requires:	%{lib_name} = %{version}-%{release}
+Requires:	%{libname} = %{version}-%{release}
 Provides:	lib%{name}-devel = %{version}-%{release}
 Provides:	%{name}-devel = %{version}-%{release}
+Obsoletes:	%{mklibname lirc 0 -d}
 
-%description -n	%{lib_name}-devel
+%description -n	%{develname}
 This package provides the files necessary to develop LIRC-based
 programs.
 
@@ -115,7 +116,7 @@ is not enough.
 %prep
 %if %snapshot
 %setup -q -n %{name}
-rm -r CVS */CVS */*/CVS
+#rm -r CVS */CVS */*/CVS
 %else
 %setup -q
 %endif
@@ -196,7 +197,7 @@ done
 
 # get modulelist
 pushd drivers
-drivers=$(echo lirc_* | sed "s/lirc_parallel //" | sed "s/lirc_gpio //")
+drivers=$(echo lirc_* | sed "s/lirc_aver //" | sed "s/lirc_fly98 //" | sed "s/lirc_haup //" | sed "s/lirc_parallel //" | sed "s/lirc_pixview //" | sed "s/lirc_gpio //" | sed "s/lirc_usb//")
 popd
 
 cat > %{buildroot}/usr/src/%{name}-%{version}-%{release}/dkms.conf <<EOF
@@ -238,8 +239,8 @@ done
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%post	-n %{lib_name} -p /sbin/ldconfig
-%postun	-n %{lib_name} -p /sbin/ldconfig
+%post	-n %{libname} -p /sbin/ldconfig
+%postun	-n %{libname} -p /sbin/ldconfig
 
 %post
 %create_ghostfile /var/log/lircd root root 644
@@ -293,11 +294,11 @@ true
 %{_sbindir}/*
 %{_mandir}/*/*
 
-%files -n %{lib_name}
+%files -n %{libname}
 %defattr(-,root,root)
-%{_libdir}/*.so.%{lib_major}*
+%{_libdir}/*.so.%{major}*
 
-%files -n %{lib_name}-devel
+%files -n %{develname}
 %defattr(-,root,root)
 %{_includedir}/lirc
 %{_datadir}/aclocal/*
