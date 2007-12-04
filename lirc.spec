@@ -32,7 +32,7 @@ Source3:	lircd.init
 Source4:	lircmd.init
 URL:		http://www.lirc.org/
 BuildRequires:	autoconf
-BuildRequires:	XFree86-devel
+BuildRequires:	X11-devel
 BuildRequires:  libirman-static-devel
 BuildRequires:	libusb-devel
 %if %mdkversion >= 200710
