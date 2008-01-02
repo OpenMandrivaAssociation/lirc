@@ -45,6 +45,7 @@ BuildRequires:	help2man
 Requires(post):	rpm-helper
 Requires(preun):rpm-helper
 Requires:	setserial
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %description
 LIRC is a package that allows you to decode and send infra-red signals
