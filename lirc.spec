@@ -1,7 +1,7 @@
 %define	name	lirc
 
 %define	version	0.8.2
-%define snapshot 20080105
+%define snapshot 20080128
 %define	rel	1
 
 %if %snapshot
