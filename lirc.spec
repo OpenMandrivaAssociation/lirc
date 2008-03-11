@@ -2,7 +2,7 @@
 
 %define	version	0.8.2
 %define snapshot 20080310
-%define	rel	1
+%define	rel	2
 
 %if %snapshot
 %define release	%mkrel 1.%snapshot.%rel
