@@ -235,6 +235,8 @@ EOF
 
 done
 
+rm -rf %{buildroot}/dev
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
