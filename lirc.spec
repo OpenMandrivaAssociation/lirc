@@ -109,9 +109,6 @@ Requires(preun): dkms
 %description -n	dkms-%{name}-gpio
 This package provides the GPIO module for LIRC.
 
-This module requires the full kernel source. Stripped kernel source
-is not enough.
-
 %prep
 %if %snapshot
 %setup -q -n %{name}
