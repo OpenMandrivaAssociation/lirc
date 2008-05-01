@@ -1,22 +1,19 @@
-%define	name	lirc
-
-%define	version	0.8.2
-%define snapshot 20080310
-%define	rel	2
+%define snapshot	20080501
+%define	rel		1
 
 %if %snapshot
-%define release	%mkrel 1.%snapshot.%rel
+%define release	%mkrel 0.%snapshot.%rel
 %else
 %define	release	%mkrel %rel
 %endif
 
-%define	major 0
-%define libname %mklibname %{name} %{major}
-%define develname %mklibname %{name} -d
+%define	major		0
+%define libname 	%mklibname %{name} %{major}
+%define develname	%mklibname %{name} -d
 
 Summary:	Linux Infrared Remote Control daemons
-Name:		%{name}
-Version:	%{version}
+Name:		lirc
+Version:	0.8.3
 Release:	%{release}
 License:	GPLv2+
 Group:		System/Kernel and hardware
@@ -140,22 +137,22 @@ DEFS="-DHAVE_CONFIG_H -DHID_MAX_USAGES"
 %make -C doc release
 
 %install
-rm -rf $RPM_BUILD_ROOT
-mkdir -p $RPM_BUILD_ROOT%{_datadir}/aclocal
-mkdir -p $RPM_BUILD_ROOT/var/log
+rm -rf %{buildroot}
+mkdir -p %{buildroot}%{_datadir}/aclocal
+mkdir -p %{buildroot}/var/log
 
 %makeinstall_std
 
-install contrib/*.m4 $RPM_BUILD_ROOT%{_datadir}/aclocal
+install contrib/*.m4 %{buildroot}%{_datadir}/aclocal
 
-mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/udev/rules.d/
-install -m644 contrib/lirc.rules $RPM_BUILD_ROOT%{_sysconfdir}/udev/rules.d/
+mkdir -p %{buildroot}%{_sysconfdir}/udev/rules.d/
+install -m644 contrib/lirc.rules %{buildroot}%{_sysconfdir}/udev/rules.d/
 
-install -m644 %{SOURCE2} -D $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/lircd
-install -m755 %{SOURCE3} -D $RPM_BUILD_ROOT%{_initrddir}/lircd
-install -m755 %{SOURCE4} -D $RPM_BUILD_ROOT%{_initrddir}/lircmd
+install -m644 %{SOURCE2} -D %{buildroot}%{_sysconfdir}/sysconfig/lircd
+install -m755 %{SOURCE3} -D %{buildroot}%{_initrddir}/lircd
+install -m755 %{SOURCE4} -D %{buildroot}%{_initrddir}/lircmd
 
-cat > $RPM_BUILD_ROOT%{_sysconfdir}/lircd.conf<<END
+cat > %{buildroot}%{_sysconfdir}/lircd.conf<<END
 #
 # This is a placeholder for your configuration file.
 # See %{_datadir}/%{name}-remotes for some examples.
@@ -163,7 +160,7 @@ cat > $RPM_BUILD_ROOT%{_sysconfdir}/lircd.conf<<END
 #
 END
 
-cp -f $RPM_BUILD_ROOT%{_sysconfdir}/lirc{,m}d.conf
+cp -f %{buildroot}%{_sysconfdir}/lirc{,m}d.conf
 
 # dkms
 
@@ -235,7 +232,7 @@ done
 rm -rf %{buildroot}/dev
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %post	-n %{libname} -p /sbin/ldconfig
 %postun	-n %{libname} -p /sbin/ldconfig
