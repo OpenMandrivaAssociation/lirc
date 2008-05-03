@@ -1,5 +1,5 @@
 %define snapshot	20080501
-%define	rel		1
+%define	rel		2
 
 %if %snapshot
 %define release	%mkrel 0.%snapshot.%rel
@@ -212,6 +212,13 @@ for module in $drivers; do
 	EOF
 	i=$((i+1))
 done
+
+cat >> %{buildroot}/usr/src/%{name}-%{version}-%{release}/dkms.conf <<-EOF
+BUILT_MODULE_NAME[$i]="commandir"
+BUILT_MODULE_LOCATION[$i]="drivers/lirc_cmdir"
+DEST_MODULE_LOCATION[$i]="/kernel/drivers/input/misc"
+EOF
+i=$((i+1))
 
 for drivername in parallel gpio; do
 cat > %{buildroot}/usr/src/%{name}-$drivername-%{version}-%{release}/dkms.conf <<EOF
