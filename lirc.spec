@@ -1,6 +1,6 @@
 #define snapshot	20080501
 %define snapshot 0
-%define	rel		1
+%define	rel		2
 
 %if %snapshot
 %define release	%mkrel 0.%snapshot.%rel
@@ -34,6 +34,8 @@ Patch0:		lirc-0.8.3-remote-includes-directive.patch
 Patch1:		lirc-0.8.3-validate-transmit-buffer.patch
 # (fc) 0.8.3-1mdv use new instead of conf as filename suffix in template mode (Fedora)
 Patch2:		lirc-use-new-instead-of-conf-as-filename-suffix.patch
+# (fc) 0.8.3-2mdv don't exit daemon even though device cannot be initialized (CVS)
+Patch3:		lirc-0.8.3-dontexit.patch
 URL:		http://www.lirc.org/
 BuildRequires:	autoconf
 BuildRequires:	X11-devel
@@ -123,6 +125,7 @@ This package provides the GPIO module for LIRC.
 %patch0 -p1 -b .include
 %patch1 -p1 -b .validate
 %patch2 -p1 -b .new
+%patch3 -p1 -b .dontexit
 
 %build
 %if %snapshot
