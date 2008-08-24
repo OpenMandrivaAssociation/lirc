@@ -1,5 +1,6 @@
-%define snapshot	20080501
-%define	rel		2
+#define snapshot	20080501
+%define snapshot 0
+%define	rel		1
 
 %if %snapshot
 %define release	%mkrel 0.%snapshot.%rel
@@ -27,6 +28,12 @@ Source0:	http://prdownloads.sourceforge.net/lirc/%{name}-%{version}.tar.bz2
 Source2:	lircd.sysconfig
 Source3:	lircd.init
 Source4:	lircmd.init
+# (fc) 0.8.3-1mdv add include directive support for config file (Fedora)
+Patch0:		lirc-0.8.3-remote-includes-directive.patch
+# (fc) 0.8.3-1mdv validate transmit buffer (upstream)
+Patch1:		lirc-0.8.3-validate-transmit-buffer.patch
+# (fc) 0.8.3-1mdv use new instead of conf as filename suffix in template mode (Fedora)
+Patch2:		lirc-use-new-instead-of-conf-as-filename-suffix.patch
 URL:		http://www.lirc.org/
 BuildRequires:	autoconf
 BuildRequires:	X11-devel
@@ -113,10 +120,14 @@ This package provides the GPIO module for LIRC.
 %else
 %setup -q
 %endif
+%patch0 -p1 -b .include
+%patch1 -p1 -b .validate
+%patch2 -p1 -b .new
 
 %build
-
+%if %snapshot
 ./autogen.sh
+%endif
 
 %configure2_5x	--localstatedir=/var \
 		--with-x \
@@ -128,13 +139,14 @@ This package provides the GPIO module for LIRC.
 		--with-transmitter \
 		--with-kerneldir=$(pwd) # fixes build as of 20070827
 
-# parallel build doesn't work as of cvs20060722
-make \
+%make \
 %if %mdkversion < 1020
 DEFS="-DHAVE_CONFIG_H -DHID_MAX_USAGES"
 %endif
 
-%make -C doc release
+%if %snapshot
+make -C doc release
+%endif
 
 %install
 rm -rf %{buildroot}
