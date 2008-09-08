@@ -1,6 +1,6 @@
 #define snapshot	20080501
 %define snapshot 0
-%define	rel		2
+%define	rel		3
 
 %if %snapshot
 %define release	%mkrel 0.%snapshot.%rel
@@ -36,6 +36,8 @@ Patch1:		lirc-0.8.3-validate-transmit-buffer.patch
 Patch2:		lirc-use-new-instead-of-conf-as-filename-suffix.patch
 # (fc) 0.8.3-2mdv don't exit daemon even though device cannot be initialized (CVS)
 Patch3:		lirc-0.8.3-dontexit.patch
+# (pt) 0.8.3-3mdv patches from cvs to build on 2.6.27
+Patch4:		lirc-0.8.3-2.6.27.patch
 URL:		http://www.lirc.org/
 BuildRequires:	autoconf
 BuildRequires:	X11-devel
@@ -126,6 +128,7 @@ This package provides the GPIO module for LIRC.
 %patch1 -p1 -b .validate
 %patch2 -p1 -b .new
 %patch3 -p1 -b .dontexit
+%patch4 -p0 -b .2.6.27
 
 %build
 %if %snapshot
