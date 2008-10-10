@@ -1,11 +1,23 @@
-#define snapshot	20080501
-%define snapshot 0
-%define	rel		4
+# cvs -d:pserver:anonymous@lirc.cvs.sourceforge.net:/cvsroot/lirc login
+# cvs -z8 -d:pserver:anonymous@lirc.cvs.sourceforge.net:/cvsroot/lirc co lirc
+%define snapshot	0
+%define pre		2
+%define	rel		1
 
 %if %snapshot
-%define release	%mkrel 0.%snapshot.%rel
+%define release		%mkrel 0.%{snapshot}.%{rel}
+%define distname	%{name}-%{snapshot}.tar.lzma
+%define dirname		%{name}
 %else
-%define	release	%mkrel %rel
+%if %pre
+%define release		%mkrel 0.pre%{pre}.%{rel}
+%define distname	%{name}-%{version}pre%{pre}.tar.bz2
+%define dirname		%{name}-%{version}pre%{pre}
+%else
+%define	release		%mkrel %{rel}
+%define distname	%{name}-%{version}.tar.bz2
+%define dirname		%{name}-%{version}
+%endif
 %endif
 
 %define	major		0
@@ -14,40 +26,22 @@
 
 Summary:	Linux Infrared Remote Control daemons
 Name:		lirc
-Version:	0.8.3
+Version:	0.8.4
 Release:	%{release}
 License:	GPLv2+
 Group:		System/Kernel and hardware
-%if %snapshot
-# cvs -d:pserver:anonymous@lirc.cvs.sourceforge.net:/cvsroot/lirc login
-# cvs -z8 -d:pserver:anonymous@lirc.cvs.sourceforge.net:/cvsroot/lirc co lirc
-Source0:	%{name}-%{snapshot}.tar.lzma
-%else
-Source0:	http://prdownloads.sourceforge.net/lirc/%{name}-%{version}.tar.bz2
-%endif
+Source0:	http://prdownloads.sourceforge.net/lirc/%{distname}
 Source2:	lircd.sysconfig
 Source3:	lircd.init
 Source4:	lircmd.init
-# (fc) 0.8.3-1mdv add include directive support for config file (Fedora)
-Patch0:		lirc-0.8.3-remote-includes-directive.patch
-# (fc) 0.8.3-1mdv validate transmit buffer (upstream)
-Patch1:		lirc-0.8.3-validate-transmit-buffer.patch
 # (fc) 0.8.3-1mdv use new instead of conf as filename suffix in template mode (Fedora)
-Patch2:		lirc-use-new-instead-of-conf-as-filename-suffix.patch
-# (fc) 0.8.3-2mdv don't exit daemon even though device cannot be initialized (CVS)
-Patch3:		lirc-0.8.3-dontexit.patch
-# (pt) 0.8.3-3mdv patches from cvs to build on 2.6.27
-Patch4:		lirc-0.8.3-2.6.27.patch
+Patch0:		lirc-use-new-instead-of-conf-as-filename-suffix.patch
 URL:		http://www.lirc.org/
 BuildRequires:	autoconf
 BuildRequires:	X11-devel
 BuildRequires:  libirman-static-devel
 BuildRequires:	libusb-devel
-%if %mdkversion >= 200710
-BuildRequires:	portaudio0-devel
-%else
 BuildRequires:	portaudio-devel
-%endif
 BuildRequires:	libalsa-devel
 BuildRequires:	help2man
 Requires(post):	rpm-helper
@@ -118,17 +112,8 @@ Requires(preun): dkms
 This package provides the GPIO module for LIRC.
 
 %prep
-%if %snapshot
-%setup -q -n %{name}
-#rm -r CVS */CVS */*/CVS
-%else
-%setup -q
-%endif
-%patch0 -p1 -b .include
-%patch1 -p1 -b .validate
-%patch2 -p1 -b .new
-%patch3 -p1 -b .dontexit
-%patch4 -p0 -b .2.6.27
+%setup -q -n %{dirname}
+%patch0 -p1 -b .new
 
 %build
 %if %snapshot
@@ -208,7 +193,7 @@ done
 
 # get modulelist
 pushd drivers
-drivers=$(echo lirc_* | sed "s/lirc_aver //" | sed "s/lirc_fly98 //" | sed "s/lirc_haup //" | sed "s/lirc_parallel //" | sed "s/lirc_pixview //" | sed "s/lirc_gpio //" | sed "s/lirc_usb//")
+drivers=$(echo lirc_* | sed "s/lirc_parallel //" | sed "s/lirc_gpio //")
 popd
 
 cat > %{buildroot}/usr/src/%{name}-%{version}-%{release}/dkms.conf <<EOF
