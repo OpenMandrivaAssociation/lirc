@@ -1,7 +1,7 @@
 # cvs -d:pserver:anonymous@lirc.cvs.sourceforge.net:/cvsroot/lirc login
 # cvs -z8 -d:pserver:anonymous@lirc.cvs.sourceforge.net:/cvsroot/lirc co lirc
 %define snapshot	0
-%define pre		2
+%define pre		0
 %define	rel		1
 
 %if %snapshot
@@ -36,6 +36,8 @@ Source3:	lircd.init
 Source4:	lircmd.init
 # (fc) 0.8.3-1mdv use new instead of conf as filename suffix in template mode (Fedora)
 Patch0:		lirc-use-new-instead-of-conf-as-filename-suffix.patch
+# (aw) 0.8.4-1mdv: support two new iMon devices (upstream CVS)
+Patch1:		lirc-0.8.4-imon.patch
 URL:		http://www.lirc.org/
 BuildRequires:	autoconf
 BuildRequires:	X11-devel
@@ -114,6 +116,7 @@ This package provides the GPIO module for LIRC.
 %prep
 %setup -q -n %{dirname}
 %patch0 -p1 -b .new
+%patch1 -p1 -b .imon
 
 %build
 %if %snapshot
