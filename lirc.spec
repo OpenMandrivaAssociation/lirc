@@ -2,7 +2,7 @@
 # cvs -z8 -d:pserver:anonymous@lirc.cvs.sourceforge.net:/cvsroot/lirc co lirc
 %define snapshot	0
 %define pre		0
-%define	rel		2
+%define	rel		3
 
 %if %snapshot
 %define release		%mkrel 0.%{snapshot}.%{rel}
