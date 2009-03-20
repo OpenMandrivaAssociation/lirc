@@ -1,8 +1,8 @@
 # cvs -d:pserver:anonymous@lirc.cvs.sourceforge.net:/cvsroot/lirc login
 # cvs -z8 -d:pserver:anonymous@lirc.cvs.sourceforge.net:/cvsroot/lirc co lirc
-%define snapshot	0
+%define snapshot	20090320
 %define pre		0
-%define	rel		3
+%define	rel		1
 
 %if %snapshot
 %define release		%mkrel 0.%{snapshot}.%{rel}
@@ -26,7 +26,7 @@
 
 Summary:	Linux Infrared Remote Control daemons
 Name:		lirc
-Version:	0.8.4
+Version:	0.8.5
 Release:	%{release}
 License:	GPLv2+
 Group:		System/Kernel and hardware
@@ -36,8 +36,8 @@ Source3:	lircd.init
 Source4:	lircmd.init
 # (fc) 0.8.3-1mdv use new instead of conf as filename suffix in template mode (Fedora)
 Patch0:		lirc-use-new-instead-of-conf-as-filename-suffix.patch
-# (aw) 0.8.4-1mdv: support two new iMon devices (upstream CVS)
-Patch1:		lirc-0.8.4-imon.patch
+# Build ftdi conditionally as intended
+Patch1:		lirc-fix-conditional-ftdi.patch
 URL:		http://www.lirc.org/
 BuildRequires:	autoconf
 BuildRequires:	X11-devel
@@ -116,7 +116,7 @@ This package provides the GPIO module for LIRC.
 %prep
 %setup -q -n %{dirname}
 %patch0 -p1 -b .new
-%patch1 -p1 -b .imon
+%patch1 -p1
 
 %build
 %if %snapshot
@@ -133,7 +133,8 @@ This package provides the GPIO module for LIRC.
 		--with-transmitter \
 		--with-kerneldir=$(pwd) # fixes build as of 20070827
 
-%make \
+# parallel make broken as of 2009-03
+make \
 %if %mdkversion < 1020
 DEFS="-DHAVE_CONFIG_H -DHID_MAX_USAGES"
 %endif
@@ -199,6 +200,9 @@ pushd drivers
 drivers=$(echo lirc_* | sed "s/lirc_parallel //" | sed "s/lirc_gpio //")
 popd
 
+# Anssi 2009-03 empty directory
+drivers="${drivers/lirc_cmdir /}"
+
 cat > %{buildroot}/usr/src/%{name}-%{version}-%{release}/dkms.conf <<EOF
 PACKAGE_NAME="%{name}"
 PACKAGE_VERSION="%{version}-%{release}"
@@ -219,12 +223,12 @@ for module in $drivers; do
 	i=$((i+1))
 done
 
-cat >> %{buildroot}/usr/src/%{name}-%{version}-%{release}/dkms.conf <<-EOF
-BUILT_MODULE_NAME[$i]="commandir"
-BUILT_MODULE_LOCATION[$i]="drivers/lirc_cmdir"
-DEST_MODULE_LOCATION[$i]="/kernel/drivers/input/misc"
-EOF
-i=$((i+1))
+#cat >> %{buildroot}/usr/src/%{name}-%{version}-%{release}/dkms.conf <<-EOF
+#BUILT_MODULE_NAME[$i]="commandir"
+#BUILT_MODULE_LOCATION[$i]="drivers/lirc_cmdir"
+#DEST_MODULE_LOCATION[$i]="/kernel/drivers/input/misc"
+#EOF
+#i=$((i+1))
 
 for drivername in parallel gpio; do
 cat > %{buildroot}/usr/src/%{name}-$drivername-%{version}-%{release}/dkms.conf <<EOF
