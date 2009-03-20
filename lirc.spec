@@ -38,6 +38,7 @@ Source4:	lircmd.init
 Patch0:		lirc-use-new-instead-of-conf-as-filename-suffix.patch
 # Build ftdi conditionally as intended
 Patch1:		lirc-fix-conditional-ftdi.patch
+Patch2:		lirc-printf-format.patch
 URL:		http://www.lirc.org/
 BuildRequires:	autoconf
 BuildRequires:	X11-devel
@@ -117,6 +118,7 @@ This package provides the GPIO module for LIRC.
 %setup -q -n %{dirname}
 %patch0 -p1 -b .new
 %patch1 -p1
+%patch2 -p1
 
 %build
 %if %snapshot
