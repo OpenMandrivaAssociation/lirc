@@ -2,7 +2,7 @@
 # cvs -z8 -d:pserver:anonymous@lirc.cvs.sourceforge.net:/cvsroot/lirc co lirc
 %define snapshot	20090320
 %define pre		0
-%define	rel		2
+%define rel		3
 
 %if %snapshot
 %define release		%mkrel 0.%{snapshot}.%{rel}
@@ -162,7 +162,7 @@ install -m644 %{SOURCE2} -D %{buildroot}%{_sysconfdir}/sysconfig/lircd
 install -m755 %{SOURCE3} -D %{buildroot}%{_initrddir}/lircd
 install -m755 %{SOURCE4} -D %{buildroot}%{_initrddir}/lircmd
 install -m644 %{SOURCE5} -D %{buildroot}%{_libdir}/pkgconfig/liblircclient0.pc
-perl -pi -e "s/0.8.3/%version/" %{buildroot}%{_libdir}/pkgconfig/liblircclient0.pc
+sed -i -e "s/0.8.3/%version/" -e "s^/lib^/%_lib^" %{buildroot}%{_libdir}/pkgconfig/liblircclient0.pc
 
 cat > %{buildroot}%{_sysconfdir}/lircd.conf<<END
 #
