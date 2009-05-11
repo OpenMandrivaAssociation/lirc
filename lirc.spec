@@ -2,7 +2,7 @@
 # cvs -z8 -d:pserver:anonymous@lirc.cvs.sourceforge.net:/cvsroot/lirc co lirc
 %define snapshot	20090320
 %define pre		0
-%define	rel		1
+%define	rel		2
 
 %if %snapshot
 %define release		%mkrel 0.%{snapshot}.%{rel}
@@ -34,6 +34,7 @@ Source0:	http://prdownloads.sourceforge.net/lirc/%{distname}
 Source2:	lircd.sysconfig
 Source3:	lircd.init
 Source4:	lircmd.init
+Source5: http://svn.debian.org/viewsvn/pkg-lirc/lirc/trunk/debian/liblircclient0.pc
 # (fc) 0.8.3-1mdv use new instead of conf as filename suffix in template mode (Fedora)
 Patch0:		lirc-use-new-instead-of-conf-as-filename-suffix.patch
 # Build ftdi conditionally as intended
@@ -160,6 +161,8 @@ install -m644 contrib/lirc.rules %{buildroot}%{_sysconfdir}/udev/rules.d/
 install -m644 %{SOURCE2} -D %{buildroot}%{_sysconfdir}/sysconfig/lircd
 install -m755 %{SOURCE3} -D %{buildroot}%{_initrddir}/lircd
 install -m755 %{SOURCE4} -D %{buildroot}%{_initrddir}/lircmd
+install -m644 %{SOURCE5} -D %{buildroot}%{_libdir}/pkgconfig/liblircclient0.pc
+perl -pi -e "s/0.8.3/%version/" %{buildroot}%{_libdir}/pkgconfig/liblircclient0.pc
 
 cat > %{buildroot}%{_sysconfdir}/lircd.conf<<END
 #
@@ -318,6 +321,7 @@ true
 
 %files -n %{develname}
 %defattr(-,root,root)
+%{_libdir}/pkgconfig/liblircclient0.pc
 %{_includedir}/lirc
 %{_datadir}/aclocal/*
 %{_libdir}/*.so
