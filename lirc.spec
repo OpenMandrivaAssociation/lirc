@@ -2,7 +2,7 @@
 # cvs -z8 -d:pserver:anonymous@lirc.cvs.sourceforge.net:/cvsroot/lirc co lirc
 %define snapshot	20090320
 %define pre		0
-%define rel		3
+%define rel		4
 
 %if %snapshot
 %define release		%mkrel 0.%{snapshot}.%{rel}
@@ -47,6 +47,7 @@ BuildRequires:  libirman-static-devel
 BuildRequires:	libusb-devel
 BuildRequires:	portaudio-devel
 BuildRequires:	libalsa-devel
+BuildRequires:	iguanair-devel
 BuildRequires:	help2man
 Requires(post):	rpm-helper
 Requires(preun):rpm-helper
