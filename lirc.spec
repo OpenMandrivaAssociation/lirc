@@ -1,18 +1,18 @@
 # cvs -d:pserver:anonymous@lirc.cvs.sourceforge.net:/cvsroot/lirc login
 # cvs -z8 -d:pserver:anonymous@lirc.cvs.sourceforge.net:/cvsroot/lirc co lirc
 %define snapshot	0
-%define pre		0
-%define rel		1
+%define prever		0
+%define rel		2
 
 %if %snapshot
 %define release		%mkrel 0.%{snapshot}.%{rel}
 %define distname	%{name}-%{snapshot}.tar.xz
 %define dirname		%{name}
 %else
-%if %pre
-%define release		%mkrel 0.pre%{pre}.%{rel}
-%define distname	%{name}-%{version}pre%{pre}.tar.bz2
-%define dirname		%{name}-%{version}pre%{pre}
+%if %prever
+%define release		%mkrel 0.pre%{prever}.%{rel}
+%define distname	%{name}-%{version}pre%{prever}.tar.bz2
+%define dirname		%{name}-%{version}pre%{prever}
 %else
 %define	release		%mkrel %{rel}
 %define distname	%{name}-%{version}.tar.bz2
@@ -148,6 +148,9 @@ make -C doc release
 rm -rf %{buildroot}
 mkdir -p %{buildroot}%{_datadir}/aclocal
 mkdir -p %{buildroot}/var/log
+mkdir -p %{buildroot}/var/run/lirc
+touch %{buildroot}/var/run/lirc/lircd
+touch %{buildroot}/var/run/lirc/lircd.pid
 
 %makeinstall_std
 
@@ -162,7 +165,8 @@ install -m755 %{SOURCE4} -D %{buildroot}%{_initrddir}/lircmd
 install -m644 %{SOURCE5} -D %{buildroot}%{_libdir}/pkgconfig/liblircclient0.pc
 sed -i -e "s/0.8.3/%version/" -e "s^/lib^/%_lib^" %{buildroot}%{_libdir}/pkgconfig/liblircclient0.pc
 
-cat > %{buildroot}%{_sysconfdir}/lircd.conf<<END
+mkdir -p %{buildroot}%{_sysconfdir}/lirc
+cat > %{buildroot}%{_sysconfdir}/lirc/lircd.conf<<END
 #
 # This is a placeholder for your configuration file.
 # See %{_datadir}/%{name}-remotes for some examples.
@@ -170,7 +174,7 @@ cat > %{buildroot}%{_sysconfdir}/lircd.conf<<END
 #
 END
 
-cp -f %{buildroot}%{_sysconfdir}/lirc{,m}d.conf
+cp -f %{buildroot}%{_sysconfdir}/lirc/lirc{,m}d.conf
 
 # dkms
 
@@ -249,7 +253,12 @@ EOF
 
 done
 
-rm -rf %{buildroot}/dev
+cat > README.0.8.6-2.upgrade.urpmi <<EOF
+As of LIRC 0.8.6, the config file locations have changed to
+/etc/lirc/lircd.conf, /etc/lirc/lircmd.conf, and /etc/lirc/lircrc.
+Existing files have been moved to these locations automatically.
+The socket location has changed to /var/run/lirc/lircd.
+EOF
 
 %clean
 rm -rf %{buildroot}
@@ -261,8 +270,20 @@ rm -rf %{buildroot}
 %postun	-n %{libname} -p /sbin/ldconfig
 %endif
 
+%pre
+if [ $1 = 2 ] && ! [ -e %{_sysconfdir}/lirc ]; then
+	mkdir -p %{_sysconfdir}/lirc
+	touch %{_sysconfdir}/lirc/mdv-086-migration
+fi
+
 %post
 %create_ghostfile /var/log/lircd root root 644
+if [ $1 = 2 ] && [ -e %{_sysconfdir}/lirc/mdv-086-migration ]; then
+	mv -vf %{_sysconfdir}/lircd.conf %{_sysconfdir}/lirc/lircd.conf 2>/dev/null
+	mv -vf %{_sysconfdir}/lircmd.conf %{_sysconfdir}/lirc/lircmd.conf 2>/dev/null
+	mv -vf %{_sysconfdir}/lircrc %{_sysconfdir}/lirc/lircrc 2>/dev/null
+	rm -f %{_sysconfdir}/lirc/mdv-086-migration
+fi
 %_post_service lircd
 %_post_service lircmd
 
@@ -302,15 +323,20 @@ true
 
 %files
 %defattr(-,root,root)
+%doc README.0.8.6-2.upgrade.urpmi
 %doc ANNOUNCE AUTHORS NEWS README TODO ChangeLog 
 %doc contrib/{irman2lirc,lircs} doc/irxevent.keys
 %doc doc/lirc.css doc/html doc/images
 %{_initrddir}/*
 %config(noreplace) %{_sysconfdir}/sysconfig/*
-%config(noreplace) %{_sysconfdir}/*.conf
+%dir %{_sysconfdir}/lirc
+%config(noreplace) %{_sysconfdir}/lirc/*.conf
 %config(noreplace) %{_sysconfdir}/udev/rules.d/*.rules
 %{_bindir}/*
 %{_sbindir}/*
+%dir %{_var}/run/lirc
+%ghost %{_var}/run/lirc/lircd.pid
+%ghost %{_var}/run/lirc/lircd
 %{_mandir}/*/*
 
 %files -n %{libname}
