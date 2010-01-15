@@ -1,12 +1,12 @@
 # cvs -d:pserver:anonymous@lirc.cvs.sourceforge.net:/cvsroot/lirc login
 # cvs -z8 -d:pserver:anonymous@lirc.cvs.sourceforge.net:/cvsroot/lirc co lirc
-%define snapshot	0
+%define snapshot	20100115
 %define prever		0
-%define rel		2
+%define rel		1
 
 %if %snapshot
 %define release		%mkrel 0.%{snapshot}.%{rel}
-%define distname	%{name}-%{snapshot}.tar.xz
+%define distname	%{name}-%{snapshot}.tar.bz2
 %define dirname		%{name}
 %else
 %if %prever
@@ -26,7 +26,7 @@
 
 Summary:	Linux Infrared Remote Control daemons
 Name:		lirc
-Version:	0.8.6
+Version:	0.8.7
 Release:	%{release}
 License:	GPLv2+
 Group:		System/Kernel and hardware
