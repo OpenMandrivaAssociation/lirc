@@ -2,7 +2,7 @@
 # cvs -z8 -d:pserver:anonymous@lirc.cvs.sourceforge.net:/cvsroot/lirc co lirc
 %define snapshot	20100115
 %define prever		0
-%define rel		1
+%define rel		2
 
 %if %snapshot
 %define release		%mkrel 0.%{snapshot}.%{rel}
@@ -41,7 +41,7 @@ Patch2:		lirc-printf-format.patch
 URL:		http://www.lirc.org/
 BuildRequires:	autoconf
 BuildRequires:	X11-devel
-BuildRequires:  libirman-static-devel
+BuildRequires:  libirman-devel
 BuildRequires:	libusb-devel
 BuildRequires:	portaudio-devel
 BuildRequires:	libalsa-devel
