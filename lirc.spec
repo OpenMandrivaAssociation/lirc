@@ -1,8 +1,8 @@
 # cvs -d:pserver:anonymous@lirc.cvs.sourceforge.net:/cvsroot/lirc login
 # cvs -z8 -d:pserver:anonymous@lirc.cvs.sourceforge.net:/cvsroot/lirc co lirc
-%define snapshot	20100115
+%define snapshot	20100505
 %define prever		0
-%define rel		2
+%define rel		1
 
 %if %snapshot
 %define release		%mkrel 0.%{snapshot}.%{rel}
@@ -204,7 +204,7 @@ done
 
 # get modulelist
 pushd drivers
-drivers=$(echo lirc_* | sed "s/lirc_parallel //" | sed "s/lirc_gpio //")
+drivers="lirc_dev $(echo lirc_* | sed -e "s/lirc_parallel //" -e "s/lirc_gpio //" -e "s/lirc_dev //")"
 popd
 
 # Anssi 2009-03 empty directory
