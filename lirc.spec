@@ -40,13 +40,14 @@ Patch0:		lirc-use-new-instead-of-conf-as-filename-suffix.patch
 Patch2:		lirc-printf-format.patch
 URL:		http://www.lirc.org/
 BuildRequires:	autoconf
-BuildRequires:	X11-devel
+BuildRequires:	libx11-devel
 BuildRequires:  libirman-devel
-BuildRequires:	libusb-devel
+BuildRequires:	libusb0.1-devel
 BuildRequires:	portaudio-devel
 BuildRequires:	libalsa-devel
 BuildRequires:	iguanair-devel
 BuildRequires:	help2man
+BuildRequires:	svgalib-devel
 Requires(post):	rpm-helper
 Requires(preun):rpm-helper
 Requires:	setserial
