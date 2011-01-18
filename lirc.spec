@@ -1,8 +1,8 @@
 # cvs -d:pserver:anonymous@lirc.cvs.sourceforge.net:/cvsroot/lirc login
 # cvs -z8 -d:pserver:anonymous@lirc.cvs.sourceforge.net:/cvsroot/lirc co lirc
-%define snapshot	20100505
+%define snapshot	0
 %define prever		0
-%define rel		2
+%define rel		1
 
 %if %snapshot
 %define release		%mkrel 0.%{snapshot}.%{rel}
@@ -82,6 +82,8 @@ programs.
 %package -n	dkms-%{name}
 Summary:	Kernel modules for LIRC
 Group:		System/Kernel and hardware
+Obsoletes:	dkms-lirc-parallel < 0.8.7-1
+Provides:	dkms-lirc-parallel = %{version}-%{release}
 Requires(post):	dkms
 Requires(preun): dkms
 
@@ -90,20 +92,6 @@ This package provides the kernel modules for LIRC.
 
 Install this package if the LIRC driver you are using requires
 them and your kernel doesn't include them.
-
-Note that lirc_gpio and lirc_parallel are in packages of their own.
-
-%package -n     dkms-%{name}-parallel
-Summary:        Parallel port module for LIRC
-Group:          System/Kernel and hardware
-Requires:       dkms-%{name} = %version
-Requires(post): dkms
-Requires(preun): dkms
-
-%description -n dkms-%{name}-parallel
-This package provides the parallel port module for LIRC.
-
-This module requires a non-SMP kernel.
 
 %package -n	dkms-%{name}-gpio
 Summary:	GPIO module for LIRC
@@ -179,7 +167,11 @@ cp -f %{buildroot}%{_sysconfdir}/lirc/lirc{,m}d.conf
 
 # dkms
 
-for lircsrcdir in %{name} %{name}-parallel %{name}-gpio; do
+for lircsrcdir in %{name} \
+%if 0
+	%{name}-gpio \
+%endif
+	; do
 
 install -d -m755 %{buildroot}/usr/src/$lircsrcdir-%{version}-%{release}
 cp -a Makefile Makefile.in Makefile.am acinclude.m4 \
@@ -194,22 +186,20 @@ done
 
 cp -a drivers %{buildroot}/usr/src/%{name}-%{version}-%{release}
 
-for drivername in parallel gpio; do
+%if 0
+for drivername in gpio; do
 install -d -m755 %{buildroot}/usr/src/%{name}-$drivername-%{version}-%{release}/drivers
 mv %{buildroot}/usr/src/%{name}-%{version}-%{release}/drivers/lirc_$drivername \
 	%{buildroot}/usr/src/%{name}-$drivername-%{version}-%{release}/drivers/
 cp -a drivers/*.h drivers/Makefile* drivers/lirc_dev \
 	%{buildroot}/usr/src/%{name}-$drivername-%{version}-%{release}/drivers/
-
 done
+%endif
 
 # get modulelist
 pushd drivers
-drivers="lirc_dev $(echo lirc_* | sed -e "s/lirc_parallel //" -e "s/lirc_gpio //" -e "s/lirc_dev //")"
+drivers="lirc_dev $(echo lirc_* | sed -e "s/lirc_gpio //" -e "s/lirc_dev //")"
 popd
-
-# Anssi 2009-03 empty directory
-drivers="${drivers/lirc_cmdir /}"
 
 cat > %{buildroot}/usr/src/%{name}-%{version}-%{release}/dkms.conf <<EOF
 PACKAGE_NAME="%{name}"
@@ -231,14 +221,9 @@ for module in $drivers; do
 	i=$((i+1))
 done
 
-#cat >> %{buildroot}/usr/src/%{name}-%{version}-%{release}/dkms.conf <<-EOF
-#BUILT_MODULE_NAME[$i]="commandir"
-#BUILT_MODULE_LOCATION[$i]="drivers/lirc_cmdir"
-#DEST_MODULE_LOCATION[$i]="/kernel/drivers/input/misc"
-#EOF
-#i=$((i+1))
-
-for drivername in parallel gpio; do
+%if 0
+# This driver doesn't seem to work with recent kernels at all. (2011-01 -Anssi)
+for drivername in gpio; do
 cat > %{buildroot}/usr/src/%{name}-$drivername-%{version}-%{release}/dkms.conf <<EOF
 PACKAGE_NAME="%{name}-$drivername"
 PACKAGE_VERSION="%{version}-%{release}"
@@ -253,6 +238,7 @@ DEST_MODULE_LOCATION[0]="/kernel/drivers/input/misc"
 EOF
 
 done
+%endif
 
 cat > README.0.8.6-2.upgrade.urpmi <<EOF
 As of LIRC 0.8.6, the config file locations have changed to
@@ -302,16 +288,7 @@ true
 dkms remove  -m %{name} -v %{version}-%{release} --rpm_safe_upgrade --all
 true
 
-%post -n dkms-%{name}-parallel
-dkms add     -m %{name}-parallel -v %{version}-%{release} --rpm_safe_upgrade &&
-dkms build   -m %{name}-parallel -v %{version}-%{release} --rpm_safe_upgrade &&
-dkms install -m %{name}-parallel -v %{version}-%{release} --rpm_safe_upgrade --force
-true
-
-%preun -n dkms-%{name}-parallel
-dkms remove  -m %{name}-parallel -v %{version}-%{release} --rpm_safe_upgrade --all
-true
-
+%if 0
 %post -n dkms-%{name}-gpio
 dkms add     -m %{name}-gpio -v %{version}-%{release} --rpm_safe_upgrade &&
 dkms build   -m %{name}-gpio -v %{version}-%{release} --rpm_safe_upgrade &&
@@ -321,6 +298,7 @@ true
 %preun -n dkms-%{name}-gpio
 dkms remove  -m %{name}-gpio -v %{version}-%{release} --rpm_safe_upgrade --all
 true
+%endif
 
 %files
 %defattr(-,root,root)
@@ -357,10 +335,9 @@ true
 %defattr(-,root,root)
 /usr/src/%{name}-%{version}-%{release}
 
-%files -n dkms-%{name}-parallel
-%defattr(-,root,root)
-/usr/src/%{name}-parallel-%{version}-%{release}
-
+%if 0
 %files -n dkms-%{name}-gpio
 %defattr(-,root,root)
 /usr/src/%{name}-gpio-%{version}-%{release}
+%endif
+
