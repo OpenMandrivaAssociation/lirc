@@ -288,6 +288,7 @@ true
 %dir %{_var}/run/lirc
 %ghost %{_var}/run/lirc/lircd.pid
 %ghost %{_var}/run/lirc/lircd
+%ghost %{_var}/run/lirc/lircm
 %{_mandir}/*/*
 
 %files -n %{libname}
