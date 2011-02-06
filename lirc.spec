@@ -89,10 +89,6 @@ This package provides the GPIO module for LIRC.
 %patch2 -p1
 
 %build
-%if %snapshot
-./autogen.sh
-%endif
-
 %configure2_5x	--localstatedir=/var \
 		--with-x \
 		--with-port=0x3f8 \
@@ -107,10 +103,6 @@ This package provides the GPIO module for LIRC.
 make \
 %if %mdkversion < 1020
 DEFS="-DHAVE_CONFIG_H -DHID_MAX_USAGES"
-%endif
-
-%if %snapshot
-make -C doc release
 %endif
 
 %install
