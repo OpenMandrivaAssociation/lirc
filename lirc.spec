@@ -1,24 +1,4 @@
-# cvs -d:pserver:anonymous@lirc.cvs.sourceforge.net:/cvsroot/lirc login
-# cvs -z8 -d:pserver:anonymous@lirc.cvs.sourceforge.net:/cvsroot/lirc co lirc
-%define snapshot	0
-%define prever		0
-%define rel		3
-
-%if %snapshot
-%define release		%mkrel 0.%{snapshot}.%{rel}
-%define distname	%{name}-%{snapshot}.tar.bz2
-%define dirname		%{name}
-%else
-%if %prever
-%define release		%mkrel 0.pre%{prever}.%{rel}
-%define distname	%{name}-%{version}pre%{prever}.tar.bz2
-%define dirname		%{name}-%{version}pre%{prever}
-%else
-%define	release		%mkrel %{rel}
-%define distname	%{name}-%{version}.tar.bz2
-%define dirname		%{name}-%{version}
-%endif
-%endif
+%define rel		4
 
 %define	major		0
 %define libname 	%mklibname %{name} %{major}
@@ -27,10 +7,10 @@
 Summary:	Linux Infrared Remote Control daemons
 Name:		lirc
 Version:	0.8.7
-Release:	%{release}
+Release:	%mkrel %rel
 License:	GPLv2+
 Group:		System/Kernel and hardware
-Source0:	http://prdownloads.sourceforge.net/lirc/%{distname}
+Source0:	http://prdownloads.sourceforge.net/lirc/%{name}-%{version}.tar.bz2
 Source2:	lircd.sysconfig
 Source3:	lircd.init
 Source4:	lircmd.init
@@ -104,7 +84,7 @@ Requires(preun): dkms
 This package provides the GPIO module for LIRC.
 
 %prep
-%setup -q -n %{dirname}
+%setup -qn %{name}-%{version}
 %patch0 -p1 -b .new
 %patch2 -p1
 
