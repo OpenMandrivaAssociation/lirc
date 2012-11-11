@@ -1,0 +1,13 @@
+diff --git a/daemons/irrecord.c b/daemons/irrecord.c
+index e6b67dd..6a74d0c 100644
+--- a/daemons/irrecord.c
++++ b/daemons/irrecord.c
+@@ -468,7 +468,7 @@ int main(int argc, char **argv)
+ 			exit(EXIT_FAILURE);
+ 		}
+ 		strcpy(filename_new, filename);
+-		strcat(filename_new, ".conf");
++		strcat(filename_new, ".new");
+ 		filename = filename_new;
+ 	} else {
+ 		if (analyse) {

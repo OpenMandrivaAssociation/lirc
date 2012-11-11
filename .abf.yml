@@ -1,0 +1,6 @@
+sources:
+  "liblircclient0.pc:"	047bd1e9b5c91d214084745d51ba91483b5d5f25
+  "lirc-0.9.0.tar.bz2:"	8456bf7101d4f2d31d61c5073357a4981b458581
+  "lircd.init:"	7fb7167e355a42d79001772b21149b2bea62f538
+  "lircd.sysconfig:"	cf6510b37b7ce5e3020180465e75a5fa627977d1
+  "lircmd.init:"	eae83a4e037be20e65a0d340d333fbf97f91cc3a

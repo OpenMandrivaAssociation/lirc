@@ -1,0 +1,5 @@
+liblircclient0.pc
+lirc-0.9.0.tar.bz2
+lircd.init
+lircd.sysconfig
+lircmd.init

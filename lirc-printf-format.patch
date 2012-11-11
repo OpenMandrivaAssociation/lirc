@@ -1,0 +1,13 @@
+Index: lirc/doc/man2html.c
+===================================================================
+--- lirc/doc/man2html.c
++++ lirc/doc/man2html.c	2009-03-21 01:03:12.000000000 +0200
+@@ -3027,7 +3027,7 @@
+ 	/* &nbsp; for mosaic users */
+ 	printf("<HR>\n<A NAME=\"index\">&nbsp;</A><H2>Index</H2>\n<DL>\n");
+ 	manidx[mip]=0;
+-	printf(manidx);
++	printf("%s", manidx);
+ 	if (subs) printf("</DL>\n");
+ 	printf("</DL>\n");
+ 	print_sig();
