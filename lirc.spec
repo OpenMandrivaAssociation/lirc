@@ -5,7 +5,7 @@
 Summary:	Linux Infrared Remote Control daemons
 Name:		lirc
 Version:	0.9.0
-Release:	6
+Release:	7
 License:	GPLv2+
 Group:		System/Kernel and hardware
 URL:		http://www.lirc.org/
