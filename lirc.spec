@@ -10,9 +10,9 @@ License:	GPLv2+
 Group:		System/Kernel and hardware
 Url:		http://www.lirc.org/
 Source0:	http://prdownloads.sourceforge.net/lirc/%{name}-%{version}.tar.bz2
-Source2:	lircd.sysconfig
-Source3:	lircd.init
-Source4:	lircmd.init
+Source2:	%{name}-tmpfiles.conf 
+Source3:	lircd.service
+Source4:	lircmd.service
 Source5:	http://svn.debian.org/viewsvn/pkg-lirc/lirc/trunk/debian/liblircclient0.pc
 # (fc) 0.8.3-1mdv use new instead of conf as filename suffix in template mode (Fedora)
 Patch0:		lirc-use-new-instead-of-conf-as-filename-suffix.patch
@@ -91,9 +91,6 @@ make
 %install
 mkdir -p %{buildroot}%{_datadir}/aclocal
 mkdir -p %{buildroot}/var/log
-mkdir -p %{buildroot}/var/run/lirc
-touch %{buildroot}/var/run/lirc/lircd
-touch %{buildroot}/var/run/lirc/lircd.pid
 
 %makeinstall_std
 
@@ -102,9 +99,9 @@ install contrib/*.m4 %{buildroot}%{_datadir}/aclocal
 mkdir -p %{buildroot}%{_sysconfdir}/udev/rules.d/
 install -m644 contrib/lirc.rules %{buildroot}%{_sysconfdir}/udev/rules.d/
 
-install -m644 %{SOURCE2} -D %{buildroot}%{_sysconfdir}/sysconfig/lircd
-install -m755 %{SOURCE3} -D %{buildroot}%{_initrddir}/lircd
-install -m755 %{SOURCE4} -D %{buildroot}%{_initrddir}/lircmd
+install -D -p -m 0644 %{SOURCE2} %{buildroot}%{_tmpfilesdir}/%{name}.conf
+install -D -m 644 %{SOURCE3} %{buildroot}%{_unitdir}/lircd.service
+install -D -m 644 %{SOURCE4} %{buildroot}%{_unitdir}/lircmd.service
 install -m644 %{SOURCE5} -D %{buildroot}%{_libdir}/pkgconfig/liblircclient0.pc
 sed -i -e "s/0.8.3/%{version}/" -e "s^/lib^/%{_lib}^" %{buildroot}%{_libdir}/pkgconfig/liblircclient0.pc
 
@@ -200,18 +197,17 @@ true
 %doc ANNOUNCE AUTHORS NEWS README TODO ChangeLog 
 %doc contrib/{irman2lirc,lircs} doc/irxevent.keys
 %doc doc/lirc.css doc/html doc/images
-%{_initrddir}/*
-%config(noreplace) %{_sysconfdir}/sysconfig/*
-%dir %{_sysconfdir}/lirc
 %config(noreplace) %{_sysconfdir}/lirc/*.conf
-%config(noreplace) %{_sysconfdir}/udev/rules.d/*.rules
+%{_sysconfdir}/udev/rules.d/%{name}.rules
 %{_bindir}/*
 %{_sbindir}/*
+%{_mandir}/*/*
 %dir %{_var}/run/lirc
-%ghost %{_var}/run/lirc/lircd.pid
 %ghost %{_var}/run/lirc/lircd
 %ghost %{_var}/run/lirc/lircm
-%{_mandir}/*/*
+%{_unitdir}/lircd.service
+%{_unitdir}/lircmd.service
+%{_tmpfilesdir}/%{name}.conf
 
 %files -n %{libname}
 %{_libdir}/liblirc_client.so.%{major}*
@@ -224,4 +220,3 @@ true
 
 %files -n dkms-%{name}
 /usr/src/%{name}-%{version}-%{release}
-
