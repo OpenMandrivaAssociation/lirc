@@ -21,7 +21,9 @@ Patch2:		lirc-printf-format.patch
 BuildRequires:	help2man
 BuildRequires:	iguanair-devel
 BuildRequires:	libirman-devel
+%ifarch %{ix86} x86_64
 BuildRequires:	svgalib-devel
+%endif
 BuildRequires:	pkgconfig(alsa)
 BuildRequires:	pkgconfig(libusb)
 BuildRequires:	pkgconfig(portaudio-2.0)
