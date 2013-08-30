@@ -2,10 +2,12 @@
 %define libname	%mklibname %{name}_client %{major}
 %define devname	%mklibname %{name}_client -d
 
+%define __noautoreq '.*/bin/true'
+
 Summary:	Linux Infrared Remote Control daemons
 Name:		lirc
 Version:	0.9.0
-Release:	8
+Release:	9
 License:	GPLv2+
 Group:		System/Kernel and hardware
 Url:		http://www.lirc.org/
