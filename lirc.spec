@@ -1,11 +1,13 @@
-%define major	0
-%define libname	%mklibname %{name}_client %{major}
-%define devname	%mklibname %{name}_client -d
+%define major 0
+%define libname %mklibname %{name}_client %{major}
+%define devname %mklibname %{name}_client -d
+
+%define __noautoreq '/bin/true'
 
 Summary:	Linux Infrared Remote Control daemons
 Name:		lirc
 Version:	0.9.0
-Release:	9
+Release:	10
 License:	GPLv2+
 Group:		System/Kernel and hardware
 Url:		http://www.lirc.org/
@@ -73,7 +75,7 @@ them and your kernel doesn't include them.
 %apply_patches
 
 %build
-%configure2_5x \
+%configure \
 	--localstatedir=/var \
 	--disable-static \
 	--with-x \
