@@ -1,18 +1,18 @@
-%define major	0
-%define libname	%mklibname %{name}_client %{major}
-%define devname	%mklibname %{name}_client -d
+%define major 0
+%define libname %mklibname %{name}_client %{major}
+%define devname %mklibname %{name}_client -d
 
 %define __noautoreq '.*/bin/true'
 
 Summary:	Linux Infrared Remote Control daemons
 Name:		lirc
 Version:	0.9.0
-Release:	15
+Release:	16
 License:	GPLv2+
 Group:		System/Kernel and hardware
 Url:		http://www.lirc.org/
 Source0:	http://prdownloads.sourceforge.net/lirc/%{name}-%{version}.tar.bz2
-Source2:	%{name}-tmpfiles.conf 
+Source2:	%{name}-tmpfiles.conf
 Source3:	lircd.service
 Source4:	lircmd.service
 Source5:	http://svn.debian.org/viewsvn/pkg-lirc/lirc/trunk/debian/liblircclient0.pc
@@ -37,38 +37,108 @@ Requires:	setserial
 LIRC is a package that allows you to decode and send infra-red signals
 of many (but not all) commonly used remote controls.
 
-Configuration files for many remotes are locate in lirc-remotes package
+Configuration files for many remotes are locate in lirc-remotes package.
 
-%package -n	%{libname}
+%files
+%doc README.0.8.6-2.upgrade.urpmi
+%doc ANNOUNCE AUTHORS NEWS README TODO ChangeLog 
+%doc contrib/{irman2lirc,lircs} doc/irxevent.keys
+%doc doc/lirc.css doc/html doc/images
+%config(noreplace) %{_sysconfdir}/lirc/*.conf
+%{_sysconfdir}/udev/rules.d/%{name}.rules
+%{_bindir}/*
+%{_sbindir}/*
+%{_mandir}/*/*
+%dir %{_var}/run/lirc
+%ghost %{_var}/run/lirc/lircd
+%ghost %{_var}/run/lirc/lircm
+%{_unitdir}/lircd.service
+%{_unitdir}/lircmd.service
+%{_tmpfilesdir}/%{name}.conf
+
+%pre
+if [ $1 = 2 ] && ! [ -e %{_sysconfdir}/lirc ]; then
+	mkdir -p %{_sysconfdir}/lirc
+	touch %{_sysconfdir}/lirc/mdv-086-migration
+fi
+
+%post
+%create_ghostfile /var/log/lircd root root 644
+if [ $1 = 2 ] && [ -e %{_sysconfdir}/lirc/mdv-086-migration ]; then
+	mv -vf %{_sysconfdir}/lircd.conf %{_sysconfdir}/lirc/lircd.conf 2>/dev/null
+	mv -vf %{_sysconfdir}/lircmd.conf %{_sysconfdir}/lirc/lircmd.conf 2>/dev/null
+	mv -vf %{_sysconfdir}/lircrc %{_sysconfdir}/lirc/lircrc 2>/dev/null
+	rm -f %{_sysconfdir}/lirc/mdv-086-migration
+fi
+%_post_service lircd
+%_post_service lircmd
+
+%preun
+%_preun_service lircmd
+%_preun_service lircd
+
+#----------------------------------------------------------------------------
+
+%package -n %{libname}
 Summary:	LIRC libraries
 Group:		System/Libraries
-Obsoletes:	%{_lib}lirc0 < 0.9.0-8
+Obsoletes:	%{_lib}lirc0 < 0.9.0-15
+Conflicts:	%{_lib}lirc0 < 0.9.0-15
 
-%description -n	%{libname}
+%description -n %{libname}
 This package provides the libraries necessary to run lirc client
 programs.
 
-%package -n	%{devname}
+%files -n %{libname}
+%{_libdir}/liblirc_client.so.%{major}*
+
+#----------------------------------------------------------------------------
+
+%package -n %{devname}
 Summary:	Header and library files for LIRC development
 Group:		Development/Other
-Requires:	%{libname} = %{version}-%{release}
-Provides:	%{name}-devel = %{version}-%{release}
-Obsoletes:	%{_lib}lirc-devel < 0.9.0-8
+Requires:	%{libname} = %{EVRD}
+Provides:	%{name}-devel = %{EVRD}
+Obsoletes:	%{_lib}lirc-devel < 0.9.0-15
+Conflicts:	%{_lib}lirc-devel < 0.9.0-15
 
-%description -n	%{devname}
+%description -n %{devname}
 This package provides the files necessary to develop LIRC-based
 programs.
 
-%package -n	dkms-%{name}
+%files -n %{devname}
+%{_libdir}/pkgconfig/liblircclient0.pc
+%{_includedir}/lirc
+%{_datadir}/aclocal/*
+%{_libdir}/*.so
+
+#----------------------------------------------------------------------------
+
+%package -n dkms-%{name}
 Summary:	Kernel modules for LIRC
 Group:		System/Kernel and hardware
 Requires(post,preun):	dkms
 
-%description -n	dkms-%{name}
+%description -n dkms-%{name}
 This package provides the kernel modules for LIRC.
 
 Install this package if the LIRC driver you are using requires
 them and your kernel doesn't include them.
+
+%files -n dkms-%{name}
+/usr/src/%{name}-%{version}-%{release}
+
+%post -n dkms-%{name}
+dkms add     -m %{name} -v %{version}-%{release} --rpm_safe_upgrade &&
+dkms build   -m %{name} -v %{version}-%{release} --rpm_safe_upgrade &&
+dkms install -m %{name} -v %{version}-%{release} --rpm_safe_upgrade --force
+true
+
+%preun -n dkms-%{name}
+dkms remove  -m %{name} -v %{version}-%{release} --rpm_safe_upgrade --all
+true
+
+#----------------------------------------------------------------------------
 
 %prep
 %setup -q
@@ -163,62 +233,3 @@ Existing files have been moved to these locations automatically.
 The socket location has changed to /var/run/lirc/lircd.
 EOF
 
-%pre
-if [ $1 = 2 ] && ! [ -e %{_sysconfdir}/lirc ]; then
-	mkdir -p %{_sysconfdir}/lirc
-	touch %{_sysconfdir}/lirc/mdv-086-migration
-fi
-
-%post
-%create_ghostfile /var/log/lircd root root 644
-if [ $1 = 2 ] && [ -e %{_sysconfdir}/lirc/mdv-086-migration ]; then
-	mv -vf %{_sysconfdir}/lircd.conf %{_sysconfdir}/lirc/lircd.conf 2>/dev/null
-	mv -vf %{_sysconfdir}/lircmd.conf %{_sysconfdir}/lirc/lircmd.conf 2>/dev/null
-	mv -vf %{_sysconfdir}/lircrc %{_sysconfdir}/lirc/lircrc 2>/dev/null
-	rm -f %{_sysconfdir}/lirc/mdv-086-migration
-fi
-%_post_service lircd
-%_post_service lircmd
-
-%preun
-%_preun_service lircmd
-%_preun_service lircd
-
-%post -n dkms-%{name}
-dkms add     -m %{name} -v %{version}-%{release} --rpm_safe_upgrade &&
-dkms build   -m %{name} -v %{version}-%{release} --rpm_safe_upgrade &&
-dkms install -m %{name} -v %{version}-%{release} --rpm_safe_upgrade --force
-true
-
-%preun -n dkms-%{name}
-dkms remove  -m %{name} -v %{version}-%{release} --rpm_safe_upgrade --all
-true
-
-%files
-%doc README.0.8.6-2.upgrade.urpmi
-%doc ANNOUNCE AUTHORS NEWS README TODO ChangeLog 
-%doc contrib/{irman2lirc,lircs} doc/irxevent.keys
-%doc doc/lirc.css doc/html doc/images
-%config(noreplace) %{_sysconfdir}/lirc/*.conf
-%{_sysconfdir}/udev/rules.d/%{name}.rules
-%{_bindir}/*
-%{_sbindir}/*
-%{_mandir}/*/*
-%dir %{_var}/run/lirc
-%ghost %{_var}/run/lirc/lircd
-%ghost %{_var}/run/lirc/lircm
-%{_unitdir}/lircd.service
-%{_unitdir}/lircmd.service
-%{_tmpfilesdir}/%{name}.conf
-
-%files -n %{libname}
-%{_libdir}/liblirc_client.so.%{major}*
-
-%files -n %{devname}
-%{_libdir}/pkgconfig/liblircclient0.pc
-%{_includedir}/lirc
-%{_datadir}/aclocal/*
-%{_libdir}/*.so
-
-%files -n dkms-%{name}
-/usr/src/%{name}-%{version}-%{release}
