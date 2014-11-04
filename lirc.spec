@@ -1,13 +1,14 @@
 %define major 0
 %define libname %mklibname %{name}_client %{major}
 %define devname %mklibname %{name}_client -d
-
 %define __noautoreq '.*/bin/true'
+
+%define build_dkms 0
 
 Summary:	Linux Infrared Remote Control daemons
 Name:		lirc
-Version:	0.9.0
-Release:	16
+Version:	0.9.1a
+Release:	1
 License:	GPLv2+
 Group:		System/Kernel and hardware
 Url:		http://www.lirc.org/
@@ -18,7 +19,7 @@ Source4:	lircmd.service
 Source5:	http://svn.debian.org/viewsvn/pkg-lirc/lirc/trunk/debian/liblircclient0.pc
 # (fc) 0.8.3-1mdv use new instead of conf as filename suffix in template mode (Fedora)
 Patch0:		lirc-use-new-instead-of-conf-as-filename-suffix.patch
-Patch2:		lirc-printf-format.patch
+Patch1:		lirc-printf-format.patch
 
 BuildRequires:	help2man
 BuildRequires:	iguanair-devel
@@ -41,7 +42,7 @@ Configuration files for many remotes are locate in lirc-remotes package.
 
 %files
 %doc README.0.8.6-2.upgrade.urpmi
-%doc ANNOUNCE AUTHORS NEWS README TODO ChangeLog 
+%doc AUTHORS NEWS README TODO ChangeLog 
 %doc contrib/{irman2lirc,lircs} doc/irxevent.keys
 %doc doc/lirc.css doc/html doc/images
 %config(noreplace) %{_sysconfdir}/lirc/*.conf
@@ -113,6 +114,7 @@ programs.
 %{_libdir}/*.so
 
 #----------------------------------------------------------------------------
+%if %build_dkms
 
 %package -n dkms-%{name}
 Summary:	Kernel modules for LIRC
@@ -138,6 +140,7 @@ true
 dkms remove  -m %{name} -v %{version}-%{release} --rpm_safe_upgrade --all
 true
 
+%endif
 #----------------------------------------------------------------------------
 
 %prep
@@ -145,9 +148,10 @@ true
 %apply_patches
 
 %build
-%configure2_5x \
+export CC=gcc
+export CXX=g++
+%configure \
 	--localstatedir=/var \
-	--disable-static \
 	--with-x \
 	--with-port=0x3f8 \
 	--with-irq=4 \
@@ -188,6 +192,8 @@ END
 
 cp -f %{buildroot}%{_sysconfdir}/lirc/lirc{,m}d.conf
 
+%if %build_dkms
+
 # dkms
 
 install -d -m755 %{buildroot}/usr/src/%{name}-%{version}-%{release}
@@ -225,6 +231,8 @@ for module in $drivers; do
 	EOF
 	i=$((i+1))
 done
+
+%endif
 
 cat > README.0.8.6-2.upgrade.urpmi <<EOF
 As of LIRC 0.8.6, the config file locations have changed to

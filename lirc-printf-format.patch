@@ -1,13 +1,11 @@
-Index: lirc/doc/man2html.c
-===================================================================
---- lirc/doc/man2html.c
-+++ lirc/doc/man2html.c	2009-03-21 01:03:12.000000000 +0200
-@@ -3027,7 +3027,7 @@
- 	/* &nbsp; for mosaic users */
- 	printf("<HR>\n<A NAME=\"index\">&nbsp;</A><H2>Index</H2>\n<DL>\n");
- 	manidx[mip]=0;
--	printf(manidx);
-+	printf("%s", manidx);
- 	if (subs) printf("</DL>\n");
- 	printf("</DL>\n");
- 	print_sig();
+--- lirc-0.9.1a/daemons/lircd.c.orig	2014-11-04 06:35:50.155270441 +0000
++++ lirc-0.9.1a/daemons/lircd.c	2014-11-04 06:35:56.898269944 +0000
+@@ -2303,7 +2303,7 @@
+ 		opt = options_getstring("lircd:listen_hostport");
+ 		if (opt){
+ 			if (opt2host_port(opt, &address, &port, errmsg) != 0){
+-				fprintf(stderr, errmsg);
++				fprintf(stderr, "%s", errmsg);
+ 				return(EXIT_FAILURE);
+ 			}
+ 		} else
