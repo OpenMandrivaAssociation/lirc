@@ -178,8 +178,8 @@ mkdir -p %{buildroot}/var/log
 
 #install contrib/*.m4 %{buildroot}%{_datadir}/aclocal
 
-mkdir -p %{buildroot}%{_sysconfdir}/udev/rules.d/
-install -m644 contrib/lirc.rules %{buildroot}%{_sysconfdir}/udev/rules.d/
+#mkdir -p %{buildroot}%{_sysconfdir}/udev/rules.d/
+#install -m644 contrib/lirc.rules %{buildroot}%{_sysconfdir}/udev/rules.d/
 
 install -D -p -m 0644 %{SOURCE2} %{buildroot}%{_tmpfilesdir}/%{name}.conf
 install -D -m 644 %{SOURCE3} %{buildroot}%{_unitdir}/lircd.service
