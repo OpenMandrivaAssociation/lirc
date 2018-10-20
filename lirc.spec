@@ -28,6 +28,7 @@ BuildRequires:	xsltproc
 BuildRequires:	pkgconfig(x11)
 BuildRequires:	pkgconfig(python)
 BuildRequires:	python3egg(pyyaml)
+BuildRequires:	python3egg(setuptools)
 BuildRequires:	pkgconfig(systemd)
 %ifarch %{ix86} x86_64
 BuildRequires:	svgalib-devel
