@@ -76,9 +76,9 @@ Configuration files for many remotes are locate in lirc-remotes package.
 %{_libdir}/lirc/plugins/*
 %dir %{_datadir}/lirc/*
 %{_datadir}/lirc/lirc*
-#{_datadir}/lirc/contrib/
-#{_datadir}/lirc/configs/
-#{_datadir}/lirc/python-pkg/
+%{_datadir}/lirc/contrib/
+%{_datadir}/lirc/configs/
+%{_datadir}/lirc/python-pkg/
 %{python3_sitearch}/*
 
 
