@@ -66,7 +66,7 @@ Configuration files for many remotes are locate in lirc-remotes package.
 /var/lib/lirc/*
 /etc/lirc/*
 %{_libdir}/libirrecord*
-%{_libdir}/lliblirc*
+%{_libdir}/liblirc*
 %{_libdir}/lirc/plugins/*
 %dir %{_datadir}/lirc*
 %{_datadir}/lirc/contrib/
