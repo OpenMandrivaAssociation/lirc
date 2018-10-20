@@ -116,7 +116,7 @@ programs.
 %files -n %{devname}
 %{_libdir}/pkgconfig/liblircclient0.pc
 %{_includedir}/lirc
-%{_datadir}/aclocal/*
+#{_datadir}/aclocal/*
 %{_libdir}/*.so
 
 #----------------------------------------------------------------------------
