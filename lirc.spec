@@ -7,8 +7,8 @@
 
 Summary:	Linux Infrared Remote Control daemons
 Name:		lirc
-Version:	0.9.1a
-Release:	4
+Version:	0.10.1
+Release:	1
 License:	GPLv2+
 Group:		System/Kernel and hardware
 Url:		http://www.lirc.org/
@@ -18,12 +18,18 @@ Source3:	lircd.service
 Source4:	lircmd.service
 Source5:	http://svn.debian.org/viewsvn/pkg-lirc/lirc/trunk/debian/liblircclient0.pc
 # (fc) 0.8.3-1mdv use new instead of conf as filename suffix in template mode (Fedora)
-Patch0:		lirc-use-new-instead-of-conf-as-filename-suffix.patch
-Patch1:		lirc-printf-format.patch
+#Patch0:		lirc-use-new-instead-of-conf-as-filename-suffix.patch
+#Patch1:		lirc-printf-format.patch
 
 BuildRequires:	help2man
 BuildRequires:	iguanair-devel
 BuildRequires:	libirman-devel
+BuildRequires:	xsltproc
+BuildRequires:	pkgconfig(x11)
+BuildRequires:	pkgconfig(python)
+BuildRequires:	python3egg(pyyaml)
+BuildRequires:	python3egg(setuptools)
+BuildRequires:	pkgconfig(systemd)
 %ifarch %{ix86} x86_64
 BuildRequires:	svgalib-devel
 %endif
@@ -42,20 +48,39 @@ Configuration files for many remotes are locate in lirc-remotes package.
 
 %files
 %doc README.0.8.6-2.upgrade.urpmi
-%doc AUTHORS NEWS README TODO ChangeLog 
+%doc AUTHORS NEWS README ChangeLog 
 %doc contrib/{irman2lirc,lircs} doc/irxevent.keys
-%doc doc/lirc.css doc/html doc/images
+%doc doc/html doc/images
 %config(noreplace) %{_sysconfdir}/lirc/*.conf
-%{_sysconfdir}/udev/rules.d/%{name}.rules
+#{_sysconfdir}/udev/rules.d/%{name}.rules
 %{_bindir}/*
 %{_sbindir}/*
 %{_mandir}/*/*
+#%{_unitdir}/*
 %dir %{_var}/run/lirc
 %ghost %{_var}/run/lirc/lircd
 %ghost %{_var}/run/lirc/lircm
 %{_unitdir}/lircd.service
 %{_unitdir}/lircmd.service
+%{_unitdir}/irexec.service
+%{_unitdir}/lircd-setup.service
+%{_unitdir}/lircd-uinput.service
+%{_unitdir}/lircd.socket
 %{_tmpfilesdir}/%{name}.conf
+/var/lib/lirc/*
+#/etc/lirc/*
+/etc/lirc/irexec.lircrc
+/etc/lirc/lircd.conf.d/README.conf.d
+%{_libdir}/libirrecord*
+%{_libdir}/liblirc*
+%{_libdir}/lirc/plugins/*
+%dir %{_datadir}/lirc/*
+%{_datadir}/lirc/lirc*
+%{_datadir}/lirc/contrib/
+%{_datadir}/lirc/configs/
+%{_datadir}/lirc/python-pkg/
+%{python3_sitearch}/*
+
 
 %pre
 if [ $1 = 2 ] && ! [ -e %{_sysconfdir}/lirc ]; then
@@ -108,10 +133,14 @@ This package provides the files necessary to develop LIRC-based
 programs.
 
 %files -n %{devname}
-%{_libdir}/pkgconfig/liblircclient0.pc
-%{_includedir}/lirc
-%{_datadir}/aclocal/*
+#{_libdir}/pkgconfig/liblircclient0.pc
+%{_includedir}/lirc*
+#{_datadir}/aclocal/*
 %{_libdir}/*.so
+%{_datadir}/doc/lirc/lirc.org/*
+%{_datadir}/doc/lirc/plugindocs
+%{_datadir}/doc/lirc/VERSION
+%{_libdir}/pkgconfig/*.pc
 
 #----------------------------------------------------------------------------
 %if %build_dkms
@@ -145,7 +174,7 @@ true
 
 %prep
 %setup -q
-%apply_patches
+%autopatch -p1
 
 %build
 export CC=gcc
@@ -170,10 +199,10 @@ mkdir -p %{buildroot}/var/log
 
 %makeinstall_std
 
-install contrib/*.m4 %{buildroot}%{_datadir}/aclocal
+#install contrib/*.m4 %{buildroot}%{_datadir}/aclocal
 
-mkdir -p %{buildroot}%{_sysconfdir}/udev/rules.d/
-install -m644 contrib/lirc.rules %{buildroot}%{_sysconfdir}/udev/rules.d/
+#mkdir -p %{buildroot}%{_sysconfdir}/udev/rules.d/
+#install -m644 contrib/lirc.rules %{buildroot}%{_sysconfdir}/udev/rules.d/
 
 install -D -p -m 0644 %{SOURCE2} %{buildroot}%{_tmpfilesdir}/%{name}.conf
 install -D -m 644 %{SOURCE3} %{buildroot}%{_unitdir}/lircd.service
