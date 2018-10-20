@@ -65,7 +65,10 @@ Configuration files for many remotes are locate in lirc-remotes package.
 %{_tmpfilesdir}/%{name}.conf
 /var/lib/lirc/*
 /etc/lirc/*
-%dir %{_datadir}/lirc
+%{_libdir}/libirrecord*
+%{_libdir}/lliblirc*
+%{_libdir}/lirc/plugins/*
+%dir %{_datadir}/lirc*
 %{_datadir}/lirc/contrib/
 %{_datadir}/lirc/configs/
 %{_datadir}/lirc/python-pkg/
