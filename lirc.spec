@@ -176,7 +176,7 @@ mkdir -p %{buildroot}/var/log
 
 %makeinstall_std
 
-install contrib/*.m4 %{buildroot}%{_datadir}/aclocal
+#install contrib/*.m4 %{buildroot}%{_datadir}/aclocal
 
 mkdir -p %{buildroot}%{_sysconfdir}/udev/rules.d/
 install -m644 contrib/lirc.rules %{buildroot}%{_sysconfdir}/udev/rules.d/
