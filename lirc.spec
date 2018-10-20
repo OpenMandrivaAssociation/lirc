@@ -56,7 +56,7 @@ Configuration files for many remotes are locate in lirc-remotes package.
 %{_bindir}/*
 %{_sbindir}/*
 %{_mandir}/*/*
-%{_unitdir}/*
+#%{_unitdir}/*
 %dir %{_var}/run/lirc
 %ghost %{_var}/run/lirc/lircd
 %ghost %{_var}/run/lirc/lircm
@@ -64,19 +64,17 @@ Configuration files for many remotes are locate in lirc-remotes package.
 %{_unitdir}/lircmd.service
 %{_tmpfilesdir}/%{name}.conf
 /var/lib/lirc/*
-/etc/lirc/*
+#/etc/lirc/*
 %{_libdir}/libirrecord*
 %{_libdir}/liblirc*
 %{_libdir}/lirc/plugins/*
 %dir %{_datadir}/lirc/*
+%{_datadir}/lirc/lirc*
 %{_datadir}/lirc/contrib/
 %{_datadir}/lirc/configs/
 %{_datadir}/lirc/python-pkg/
 %{python3_sitearch}/*
 
-
-rm -rf %{buildroot}%{_datadir}/lirc/lirc-%{version}.tar.gz
-find %{buildroot} -name '*.la' -delete
 
 %pre
 if [ $1 = 2 ] && ! [ -e %{_sysconfdir}/lirc ]; then
@@ -129,7 +127,7 @@ This package provides the files necessary to develop LIRC-based
 programs.
 
 %files -n %{devname}
-%{_libdir}/pkgconfig/liblircclient0.pc
+#{_libdir}/pkgconfig/liblircclient0.pc
 %{_includedir}/lirc*
 #{_datadir}/aclocal/*
 %{_libdir}/*.so
