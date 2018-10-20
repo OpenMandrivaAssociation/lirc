@@ -48,11 +48,11 @@ Configuration files for many remotes are locate in lirc-remotes package.
 
 %files
 %doc README.0.8.6-2.upgrade.urpmi
-%doc AUTHORS NEWS README TODO ChangeLog 
+%doc AUTHORS NEWS README ChangeLog 
 %doc contrib/{irman2lirc,lircs} doc/irxevent.keys
-%doc doc/lirc.css doc/html doc/images
+%doc doc/html doc/images
 %config(noreplace) %{_sysconfdir}/lirc/*.conf
-%{_sysconfdir}/udev/rules.d/%{name}.rules
+#{_sysconfdir}/udev/rules.d/%{name}.rules
 %{_bindir}/*
 %{_sbindir}/*
 %{_mandir}/*/*
