@@ -62,17 +62,23 @@ Configuration files for many remotes are locate in lirc-remotes package.
 %ghost %{_var}/run/lirc/lircm
 %{_unitdir}/lircd.service
 %{_unitdir}/lircmd.service
+%{_unitdir}/irexec.service
+%{_unitdir}/lircd-setup.service
+%{_unitdir}/lircd-uinput.service
+%{_unitdir}/lircd.socket
 %{_tmpfilesdir}/%{name}.conf
 /var/lib/lirc/*
 #/etc/lirc/*
+/etc/lirc/irexec.lircrc
+/etc/lirc/lircd.conf.d/README.conf.d
 %{_libdir}/libirrecord*
 %{_libdir}/liblirc*
 %{_libdir}/lirc/plugins/*
 %dir %{_datadir}/lirc/*
 %{_datadir}/lirc/lirc*
-%{_datadir}/lirc/contrib/
-%{_datadir}/lirc/configs/
-%{_datadir}/lirc/python-pkg/
+#{_datadir}/lirc/contrib/
+#{_datadir}/lirc/configs/
+#{_datadir}/lirc/python-pkg/
 %{python3_sitearch}/*
 
 
