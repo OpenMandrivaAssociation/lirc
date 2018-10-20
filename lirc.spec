@@ -19,7 +19,7 @@ Source4:	lircmd.service
 Source5:	http://svn.debian.org/viewsvn/pkg-lirc/lirc/trunk/debian/liblircclient0.pc
 # (fc) 0.8.3-1mdv use new instead of conf as filename suffix in template mode (Fedora)
 #Patch0:		lirc-use-new-instead-of-conf-as-filename-suffix.patch
-Patch1:		lirc-printf-format.patch
+#Patch1:		lirc-printf-format.patch
 
 BuildRequires:	help2man
 BuildRequires:	iguanair-devel
