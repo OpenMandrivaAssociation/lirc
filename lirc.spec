@@ -68,12 +68,15 @@ Configuration files for many remotes are locate in lirc-remotes package.
 %{_libdir}/libirrecord*
 %{_libdir}/liblirc*
 %{_libdir}/lirc/plugins/*
-%dir %{_datadir}/lirc*
+%dir %{_datadir}/lirc/*
 %{_datadir}/lirc/contrib/
 %{_datadir}/lirc/configs/
 %{_datadir}/lirc/python-pkg/
 %{python3_sitearch}/*
 
+
+rm -rf %{buildroot}%{_datadir}/lirc/lirc-%{version}.tar.gz
+find %{buildroot} -name '*.la' -delete
 
 %pre
 if [ $1 = 2 ] && ! [ -e %{_sysconfdir}/lirc ]; then
