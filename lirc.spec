@@ -24,6 +24,7 @@ Source5:	http://svn.debian.org/viewsvn/pkg-lirc/lirc/trunk/debian/liblircclient0
 BuildRequires:	help2man
 BuildRequires:	iguanair-devel
 BuildRequires:	libirman-devel
+BuildRequires:	xsltproc
 %ifarch %{ix86} x86_64
 BuildRequires:	svgalib-devel
 %endif
