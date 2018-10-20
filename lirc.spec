@@ -25,6 +25,10 @@ BuildRequires:	help2man
 BuildRequires:	iguanair-devel
 BuildRequires:	libirman-devel
 BuildRequires:	xsltproc
+BuildRequires:	pkgconfig(x11)
+BuildRequires:	pkgconfig(python)
+BuildRequires:	python3egg(pyyaml)
+BuildRequires:	pkgconfig(systemd)
 %ifarch %{ix86} x86_64
 BuildRequires:	svgalib-devel
 %endif
