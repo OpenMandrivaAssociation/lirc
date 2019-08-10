@@ -4,6 +4,7 @@
 %define __noautoreq '.*/bin/true'
 
 %define build_dkms 0
+%bcond_without portaudio
 
 Summary:	Linux Infrared Remote Control daemons
 Name:		lirc
@@ -35,7 +36,9 @@ BuildRequires:	svgalib-devel
 %endif
 BuildRequires:	pkgconfig(alsa)
 BuildRequires:	pkgconfig(libusb)
+%if %{with portaudio}
 BuildRequires:	pkgconfig(portaudio-2.0)
+%endif
 BuildRequires:	pkgconfig(x11)
 Requires(post,preun):	rpm-helper
 Requires:	setserial
