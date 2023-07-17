@@ -1,3 +1,5 @@
+%global optflags %{optflags} -Wno-error -Wno-implicit-function-declaration
+
 %define major 0
 %define libname %mklibname %{name}_client %{major}
 %define devname %mklibname %{name}_client -d
