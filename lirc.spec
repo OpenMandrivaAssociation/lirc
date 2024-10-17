@@ -12,7 +12,7 @@ Version:	0.10.1
 Release:	5
 License:	GPLv2+
 Group:		System/Kernel and hardware
-Url:		http://www.lirc.org/
+Url:		https://www.lirc.org/
 Source0:	http://prdownloads.sourceforge.net/lirc/%{name}-%{version}.tar.bz2
 Source2:	%{name}-tmpfiles.conf
 Source3:	lircd.service
