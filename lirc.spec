@@ -22,6 +22,11 @@ Source5:	http://svn.debian.org/viewsvn/pkg-lirc/lirc/trunk/debian/liblircclient0
 #Patch0:		lirc-use-new-instead-of-conf-as-filename-suffix.patch
 #Patch1:		lirc-printf-format.patch
 
+BuildRequires:	autoconf
+BuildRequires:	automake
+BuildRequires:	libtool-base
+BuildRequires:	slibtool
+BuildRequires:	make
 BuildRequires:	help2man
 BuildRequires:	iguanair-devel
 BuildRequires:	libirman-devel
